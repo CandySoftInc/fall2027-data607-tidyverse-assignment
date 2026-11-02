@@ -85,9 +85,11 @@ Do not submit work to the previous course repository. Use this repository for th
 
 
 
+
 | Author | Vignette | Packages / Functions | Dataset | What It Demonstrates |
 | --- | --- | --- | --- | --- |
-| Troy Tournat | [troy-tournat_vignette.qmd](troy-tournat_vignette.qmd) | lubridate::weeks(), lubridate::yday(), lubridate::ymd(), lubridate::day(), lubridate::today() | [Japanese cherry blossom data](https://www.kaggle.com/datasets/ryanglasnapp/japanese-cherry-blossom-data) | This vignette shows step by step instructions on how to use the lubridate function from the tidyverse 2.0 package with a short analysis using Japanese cherry blossom data from 1953 - 2025. Additional tidyverse functions used in this vignette are: readr, dyplr, tidyr, ggplot2 |
+| Troy Tournat | [troy-tournat_vignette.qmd](troy-tournat_vignette.qmd) | lubridate::weeks(), lubridate::yday(), lubridate::ymd(), lubridate::day(), lubridate::today() | [Japanese cherry blossom data](https://www.kaggle.com/datasets/ryanglasnapp/japanese-cherry-blossom-data) | Demonstrates date functions from lubridate using Japanese cherry blossom data from 1953–2025. Also uses readr, dplyr, tidyr, and ggplot2. |
+| Patricio Romero | [Exploring Vehicle Fuel Efficiency with Tidyverse](vehicle_fuel_efficiency_tidyverse.qmd) | dplyr::select(), dplyr::filter(), dplyr::mutate(), dplyr::group_by(), dplyr::summarise(), ggplot2::ggplot(), ggplot2::geom_col(), ggplot2::geom_point(), stringr::str_to_title() | [ggplot2 mpg dataset](https://ggplot2.tidyverse.org/reference/mpg.html) | Cleans and transforms vehicle data, compares city and highway MPG, summarizes fuel efficiency by vehicle class, and creates visualizations. |
 
 
 
