@@ -1,0 +1,348 @@
+---
+title: "Exploring Chemical Elements Using Tidyverse"
+author: "Ozge Gundogan"
+date: 2026-11-02
+format: html
+editor: visual
+---
+
+# Introduction
+
+The Periodic Table of the Elements dataset from Kaggle provides information about chemical elements, including their names, symbols, atomic numbers, and physical and chemical properties.
+
+For this assignment, I will use Tidyverse packages in R to explore the properties of chemical elements. My goal is to identify elements with the highest and lowest melting points, examine how electronegativity changes across Period 2, and explore the relationship between electronegativity and first ionization energy.
+
+I will focus on three research questions:
+
+- Which chemical elements have the highest and lowest melting points?
+
+- How does electronegativity change across Period 2 of the periodic table?
+
+- What is the relationship between electronegativity and first ionization energy?
+
+I will use Tidyverse functions to clean, organize, summarize, and visualize the data to answer these questions.
+
+**Data Source:** <https://www.kaggle.com/datasets/jwaitze/tablesoftheelements>
+
+# Planned Approach
+
+I will use the Periodic Table of the Elements dataset available on Kaggle. First, I will import the CSV file into R using readr and examine the structure of the dataset. I will use select() to choose the relevant columns and check for missing values and data types.
+
+Next, I will use mutate() to convert text values into numeric variables and extract the first ionization energy values from the original column. I will use filter() to remove missing values separately for each analysis.
+
+To answer the first research question, I will use arrange() to identify the 10 elements with the highest and lowest melting points. I will create bar charts to compare their melting point values.
+
+For the second research question, I will use filter() to select elements from Period 2 and examine how electronegativity changes as atomic number increases. I will create a line chart to visualize this trend.
+
+For the third research question, I will examine the relationship between electronegativity and first ionization energy using a scatter plot.
+
+I will use ggplot2 to create the visualizations and interpret the results based on the observed patterns.
+
+# Anticipated Challenges
+
+One potential challenge will be handling missing values, as some elements may not have recorded values for melting points, electronegativity, or first ionization energy. I will need to identify and remove missing values separately for each analysis.
+
+Another challenge will be preparing the data for analysis. Some columns, especially electronegativity and ionization energies, may contain text, units, or multiple values that need to be converted into numeric variables.
+
+I will also need to ensure that melting point values use consistent units and that the visualizations clearly show the differences and relationships between variables.
+
+Finally, interpreting the results may be challenging because chemical properties can follow periodic trends rather than simple linear relationships. I will consider these patterns when discussing the results.
+
+# Code Base
+
+## Loading Required Packages
+
+I will load the tidyverse package, which includes tools for importing, cleaning, transforming, and visualizing data.
+
+```{r}
+library(tidyverse)
+```
+
+## Importing the Dataset
+
+I will use the read_csv() function from the readr package to import the Periodic Table dataset directly from my GitHub repository.
+
+```{r}
+url_data <- "https://github.com/OzgeG01/DATA607-Assignment/raw/refs/heads/main/periodic_table.csv"
+
+elements_data <- read_csv(
+  url_data,
+  locale = locale(encoding = "Windows-1252"),
+  show_col_types = FALSE
+)
+```
+
+## Exploring the Dataset
+
+I will use dim() to check the number of rows and columns in the dataset and names() to display all column names.
+
+```{r}
+dim(elements_data)
+
+names(elements_data)
+```
+
+## Selecting Relevant Columns
+
+I will use the select() function from the dplyr package to keep only the columns relevant to my research questions. This will make the dataset easier to work with while keeping the original data unchanged.
+
+```{r}
+elements_selected <- elements_data %>%
+  select(
+    name,
+    symbol,
+    atomic_number,
+    period,
+    element_category,
+    melting_point,
+    electronegativity,
+    ionization_energies
+  )
+
+head(elements_selected)
+```
+
+## Checking Missing Values
+
+I will use summarise() and across() from the dplyr package to count missing values in each selected column. This will help me identify which variables need cleaning before the analysis.
+
+```{r}
+elements_selected %>%
+  summarise(across(everything(), ~sum(is.na(.))))
+```
+
+The missing value check shows that name, symbol, atomic_number, and element_category have no missing values. However, melting_point has 12 missing values, electronegativity has 16, and ionization_energies has 7.
+
+I will use summarise() and across() to check for empty strings ("") in the selected columns. This will help identify missing information that may not be recorded as NA.
+
+```{r}
+elements_selected %>%
+  summarise(across(
+    where(is.character),
+    ~sum(. == "", na.rm = TRUE)
+  ))
+```
+
+The empty string check shows that none of the selected character columns contain empty strings (""). However, some columns contain missing values (NA), which will need to be handled before the analysis.
+
+## Converting Columns to Numeric Values
+
+I will use mutate() and parse_number() to convert the melting point, and electronegativity columns into numeric values. For electronegativity, I will extract the numeric values from the text and treat "Pauling scale: no data" as missing values (NA).
+
+```{r}
+elements_clean <- elements_selected %>%
+  mutate(
+    melting_point = parse_number(melting_point),
+    electronegativity = parse_number(
+      electronegativity,
+      na = c("", "NA", "Pauling scale: no data")
+    )
+  )
+```
+
+I will use glimpse() to check the structure of the cleaned dataset and verify that melting point, and electronegativity have been converted to numeric values.
+
+```{r}
+glimpse(elements_clean)
+```
+
+The glimpse() output confirms that melting point, and electronegativity have been successfully converted to numeric values. The dataset still contains 117 rows and 8 columns. The ionization energies column remains a character variable and will be cleaned next.
+
+## Extracting First Ionization Energy
+
+I will use str_extract() from the stringr package to extract the first ionization energy from the text, then use parse_number() to convert it into a numeric value. I will store the result in a new column called first_ionization_energy.
+
+```{r}
+elements_clean <- elements_clean %>%
+  mutate(
+    first_ionization_energy = ionization_energies %>%
+      str_extract("1st:\\s*[0-9,.]+") %>%
+      str_remove("1st:\\s*") %>%
+      parse_number()
+  )
+```
+
+I will use select() and head() to compare the original ionization energy values with the extracted numeric values. This will help me verify that the first ionization energies were extracted correctly.
+
+```{r}
+elements_clean %>%
+  select(name, ionization_energies, first_ionization_energy) %>%
+  head(10)
+```
+
+The results confirm that the first ionization energy values were successfully extracted from the original text and converted into numeric values (kJ/mol). Missing values remain as NA.
+
+## Checking Missing Values After Cleaning
+
+I will use summarise() and across() to check the missing values after data cleaning. This will help me identify how many values are missing in each column before answering the research questions.
+
+```{r}
+elements_clean %>%
+  summarise(across(
+    everything(),
+    ~sum(is.na(.))
+  ))
+```
+
+After data cleaning, the dataset contains 12 missing melting point values, 18 missing electronegativity values, and 7 missing first ionization energy values. The missing electronegativity values increased from 16 to 18 because two "no data" entries were converted to NA.
+
+## Handling Missing Values
+
+I will handle missing values separately for each research question using the filter() function. I will remove only the rows with missing values in the variables required for each analysis.
+
+## Identifying Elements with the Highest and Lowest Melting Points
+
+I will use the filter() function from the dplyr package to remove rows with missing melting point values. This will ensure that only elements with available melting point data are included in the analysis.
+
+```{r}
+rq1_data <- elements_clean %>%
+  filter(!is.na(melting_point))
+
+nrow(rq1_data)
+```
+
+After removing 12 missing melting point values, 105 elements remain in the dataset for the analysis.
+
+I will use arrange() with desc() to sort the elements by melting point in descending order. Then, I will use slice_head() to select the 10 elements with the highest melting points.
+
+```{r}
+highest_melting <- rq1_data %>%
+  arrange(desc(melting_point)) %>%
+  slice_head(n = 10) %>%
+  select(name, symbol, melting_point)
+
+highest_melting
+```
+
+Tungsten has the highest melting point (3695 K), followed by Rhenium (3459 K) and Osmium (3306 K). The results show that these three elements have the highest melting points among the elements in the dataset.
+
+I will use ggplot2 to create a bar chart showing the 10 elements with the highest melting points. This visualization will make it easier to compare their melting point values.
+
+```{r}
+ggplot(highest_melting,
+       aes(x = reorder(name, melting_point),
+           y = melting_point)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "Top 10 Elements with the Highest Melting Points",
+    x = "Element",
+    y = "Melting Point (K)"
+  ) +
+  theme_minimal()
+```
+
+I will use arrange() to sort the elements by melting point in ascending order. Then, I will select the 10 elements with the lowest melting points.
+
+```{r}
+lowest_melting <- rq1_data %>%
+  arrange(melting_point) %>%
+  slice_head(n = 10) %>%
+  select(name, symbol, melting_point)
+
+lowest_melting
+```
+
+Helium has the lowest melting point (0.95 K), followed by Hydrogen (13.99 K) and Neon (24.56 K). These three elements have the lowest melting points among the elements in the dataset.
+
+I will use ggplot2 to create a bar chart showing the 10 elements with the lowest melting points. This will help compare the melting point values of these elements.
+
+```{r}
+ggplot(lowest_melting,
+       aes(x = reorder(name, melting_point),
+           y = melting_point)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "Top 10 Elements with the Lowest Melting Points",
+    x = "Element",
+    y = "Melting Point (K)"
+  ) +
+  theme_minimal()
+```
+
+## Electronegativity Trends Across Period 2
+
+I will use filter() to select elements from Period 2 of the periodic table and remove missing electronegativity values. This will allow me to examine how electronegativity changes as atomic number increases within the same period.
+
+```{r}
+rq2_data <- elements_clean %>%
+  filter(
+    period == 2,
+    !is.na(electronegativity)
+  ) %>%
+  select(name, symbol, atomic_number, electronegativity)
+
+rq2_data
+```
+
+The results show that electronegativity increases across Period 2 as atomic number increases. Lithium has the lowest electronegativity (0.98), while Fluorine has the highest (3.98). Neon is excluded because its electronegativity value is missing.
+
+I will use ggplot2 to create a line chart showing how electronegativity changes across Period 2 as atomic number increases.
+
+```{r}
+ggplot(rq2_data,
+       aes(x = atomic_number, y = electronegativity)) +
+  geom_line(color = "steelblue") +
+  geom_point(color = "steelblue", size = 3) +
+  scale_x_continuous(breaks = 3:9) +
+  labs(
+    title = "Electronegativity Across Period 2",
+    x = "Atomic Number",
+    y = "Electronegativity (Pauling Scale)"
+  ) +
+  theme_minimal()
+```
+
+The line chart shows that electronegativity increases steadily across Period 2 as atomic number increases. Lithium has the lowest electronegativity (0.98), while Fluorine has the highest (3.98). This result is consistent with the expected periodic trend.
+
+## Relationship Between Electronegativity & First Ionization Energy
+
+I will use filter() to remove rows with missing electronegativity or first ionization energy values. This will ensure that only elements with both values available are included in the analysis.
+
+```{r}
+rq3_data <- elements_clean %>%
+  filter(
+    !is.na(electronegativity),
+    !is.na(first_ionization_energy)
+  )
+
+nrow(rq3_data)
+```
+
+After removing rows with missing electronegativity or first ionization energy values, 92 elements remain in the dataset for the analysis.
+
+I will use ggplot2 to create a scatter plot showing the relationship between electronegativity and first ionization energy. This will help identify possible patterns between these two chemical properties.
+
+```{r}
+ggplot(rq3_data,
+       aes(x = electronegativity,
+           y = first_ionization_energy)) +
+  geom_point(color = "steelblue") +
+  labs(
+    title = "Electronegativity vs. First Ionization Energy",
+    x = "Electronegativity (Pauling Scale)",
+    y = "First Ionization Energy (kJ/mol)"
+  ) +
+  theme_minimal()
+```
+
+The scatter plot shows a positive relationship between electronegativity and first ionization energy. In general, elements with higher electronegativity tend to have higher first ionization energies. However, some variation is observed, indicating that the relationship is not perfectly linear.
+
+# Conclusion
+
+In this assignment, I used Tidyverse packages in R to clean, analyze, and visualize chemical element data from Kaggle.
+
+The results showed that Tungsten has the highest melting point, while Helium has the lowest. I also found that electronegativity increases across Period 2 as atomic number increases. Finally, the analysis showed a positive relationship between electronegativity and first ionization energy.
+
+Overall, this analysis helped me explore chemical properties using Tidyverse functions and visualize patterns in the periodic table.
+
+# Citation
+
+I used ChatGPT (GPT-5.6 Luna), developed by OpenAI, to help me understand some of the functions I used in this assignment and to check my work.
+
+OpenAI. (2026). ChatGPT (GPT-5.6 Luna) \[Large language model\]. \[<https://chatgpt.com/> Accessed November 2, 2026\].
+
+# Video Explainer
+
+Link:
