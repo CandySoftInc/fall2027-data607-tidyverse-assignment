@@ -80,14 +80,18 @@ Do not submit work to the previous course repository. Use this repository for th
 
 
 
+
 **Students:** Edit this README in place by adding one row for your Part 1 vignette.
+
 
 
 
 
 | Author | Vignette | Packages / Functions | Dataset | What It Demonstrates |
 | --- | --- | --- | --- | --- |
-| Your Name | [your_vignette.qmd](your_vignette.qmd) | dplyr::filter(), dplyr::mutate(), ggplot2::ggplot() | [Dataset source](https://example.com) | A brief description of your analysis and techniques. |
+| Renee Watson | [Tidyverse Assignment.Rmd](Tidyverse%20Assignment.Rmd) | readr::read_csv(), dplyr::filter(), dplyr::select(), tidyr::pivot_longer(), dplyr::mutate(), dplyr::group_by(), dplyr::summarise(), dplyr::arrange() | [World Bank Life Expectancy](https://data.worldbank.org/indicator/SP.DYN.LE00.IN) | Analyzes life expectancy across 12 countries from 2000–2024 using filtering, reshaping, summary statistics, and comparisons between 2019 and 2024. |
+| Troy Tournat | [troy-tournat_vignette.qmd](troy-tournat_vignette.qmd) | lubridate::weeks(), lubridate::yday(), lubridate::ymd(), lubridate::day(), lubridate::today() | [Japanese cherry blossom data](https://www.kaggle.com/datasets/ryanglasnapp/japanese-cherry-blossom-data) | Demonstrates date functions from lubridate using Japanese cherry blossom data from 1953–2025. Also uses readr, dplyr, tidyr, and ggplot2. |
+| Patricio Romero | [Exploring Vehicle Fuel Efficiency with Tidyverse](vehicle_fuel_efficiency_tidyverse.qmd) | dplyr::select(), dplyr::filter(), dplyr::mutate(), dplyr::group_by(), dplyr::summarise(), ggplot2::ggplot(), ggplot2::geom_col(), ggplot2::geom_point(), stringr::str_to_title() | [ggplot2 mpg dataset](https://ggplot2.tidyverse.org/reference/mpg.html) | Cleans and transforms vehicle data, compares city and highway MPG, summarizes fuel efficiency by vehicle class, and creates visualizations. |
 
 
 
