@@ -23,7 +23,7 @@ This project will help me practice cleaning, organizing, summarizing, and visual
 ```{r}
 library(tidyverse)
 
-movies <- read_csv("imdb_top_250_movies.csv")
+movies <- read_csv("https://raw.githubusercontent.com/Maximus2485/Tidyverse-Vignette-Assignment.-Maxim.-Data-607/refs/heads/main/imdb_top_250_movies.csv")
 
 # Lets select useful columns and remove missing values
 movies_clean <- movies %>%
