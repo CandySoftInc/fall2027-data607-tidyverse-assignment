@@ -87,7 +87,10 @@ Do not submit work to the previous course repository. Use this repository for th
 
 | Author | Vignette | Packages / Functions | Dataset | What It Demonstrates |
 | --- | --- | --- | --- | --- |
-| Your Name | [your_vignette.qmd](your_vignette.qmd) | dplyr::filter(), dplyr::mutate(), ggplot2::ggplot() | [Dataset source](https://example.com) | A brief description of your analysis and techniques. |
+| Marc Campo | Foam Rolling Your Way Through the Tidyverse | dplyr::filter(), dplyr::group_by(), dplyr::summarize(), tidyr::pivot_longer(), ggplot2::ggplot() | FR_data_set.xlsx | A 3-condition crossover trial examining the effect of foam rolling on flexibility. Demonstrates how tidyr and dplyr were used to reshape, summarize, and analyze the results. |
+
+
+
 
 
 
