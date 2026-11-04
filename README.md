@@ -87,7 +87,7 @@ Do not submit work to the previous course repository. Use this repository for th
 
 | Author | Vignette | Packages / Functions | Dataset | What It Demonstrates |
 | --- | --- | --- | --- | --- |
-| Marc Campo | Foam Rolling Your Way Through the Tidyverse | dplyr::filter(), dplyr::group_by(), dplyr::summarize(), tidyr::pivot_longer(), ggplot2::ggplot() | FR_data_set.xlsx | A 3-condition crossover trial examining the effect of foam rolling on flexibility. Demonstrates how tidyr and dplyr were used to reshape, summarize, and analyze the results. |
+| Marc Campo | [Foam Rolling Your Way Through the Tidyverse](https://github.com/cam5671/data607tidy/blob/main/Tidyverse%20Assignment%201.Rmd) | dplyr::filter(), dplyr::group_by(), dplyr::summarize(), tidyr::pivot_longer(), ggplot2::ggplot() | 'FR_data_set.xlsx' | A 3-condition crossover trial examining the effect of foam rolling on flexibility. Demonstrates how tidyr and dplyr were used to reshape, summarize, and analyze the results. |
 
 
 
