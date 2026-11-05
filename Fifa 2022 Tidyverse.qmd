@@ -1,0 +1,103 @@
+---
+title: "Fifa 2022 TidyVerse"
+author: "Antik Salimullah"
+format: html
+editor: visual
+---
+
+# Introduction
+
+For this project, I wanted to see whether teams with more ball possession were more likely to win their matches during the 2022 FIFA World Cup. I'll use Tidyverse functions to clean the data, compare possession percentages, and examine match outcomes.
+
+# Load Dataset
+
+```{r}
+library(tidyverse)
+
+world_cup <- read_csv("Fifa_world_cup_matches-selected-columns.csv")
+
+glimpse(world_cup)
+```
+
+# Clean Dataset
+
+```{r}
+world_cup_clean <- world_cup |>
+  select(
+    team1,
+    team2,
+    `possession team1`,
+    `possession team2`,
+    `number of goals team1`,
+    `number of goals team2`
+  ) |>
+  rename(
+    possession1 = `possession team1`,
+    possession2 = `possession team2`,
+    goals1 = `number of goals team1`,
+    goals2 = `number of goals team2`
+  ) |>
+  mutate(
+    possession1 = as.numeric(str_remove(possession1, "%")),
+    possession2 = as.numeric(str_remove(possession2, "%"))
+  )
+
+glimpse(world_cup_clean)
+```
+
+# Create a Match Outcome
+
+```{r}
+world_cup_results <- world_cup_clean |>
+  mutate(
+    possession_outcome = case_when(
+      possession1 == possession2 ~ "Equal Possession",
+      goals1 == goals2 ~ "Draw",
+      possession1 > possession2 & goals1 > goals2 ~ "Won",
+      possession2 > possession1 & goals2 > goals1 ~ "Won",
+      TRUE ~ "Lost"
+    )
+  )
+
+head(world_cup_results, 10)
+```
+
+# Count the Match Outcomes
+
+```{r}
+possession_summary <- world_cup_results |>
+  filter(possession_outcome != "Equal Possession") |>
+  group_by(possession_outcome) |>
+  summarise(matches = n())
+
+possession_summary
+```
+
+# Calculate the Percentages
+
+```{r}
+possession_summary <- possession_summary |>
+  mutate(
+    percentage = round(matches / sum(matches) * 100, 1)
+  )
+
+possession_summary
+```
+
+# Create a Bar Chart
+
+```{r}
+ggplot(possession_summary, 
+       aes(x = possession_outcome, y = percentage)) +
+  geom_col(fill = "steelblue") +
+  labs(
+    title = "Does More Possession Lead to More Wins?",
+    x = "Match Outcome",
+    y = "Percentage of Matches (%)"
+  ) +
+  theme_minimal()
+```
+
+# Findings
+
+The results show that teams with higher possession won 36.1% of their matches, lost 41.0%, and drew 23.0%. Based on these results, having more possession did not necessarily lead to more wins during the 2022 World Cup.
