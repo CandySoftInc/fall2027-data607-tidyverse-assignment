@@ -91,7 +91,7 @@ Do not submit work to the previous course repository. Use this repository for th
 | --- | --- | --- | --- | --- |
 | Marc Campo | [Foam Rolling Your Way Through the Tidyverse](https://github.com/cam5671/data607tidy/blob/main/Tidyverse%20Assignment%201.Rmd) | dplyr::filter(), dplyr::group_by(), dplyr::summarize(), tidyr::pivot_longer(), ggplot2::ggplot() | 'FR_data_set.xlsx' | A 3-condition crossover trial examining the effect of foam rolling on flexibility. Demonstrates how tidyr and dplyr were used to reshape, summarize, and analyze the results. |
 
-
+| Antik Salimullah | [FIFA 2022 World Cup Possession Analysis](Fifa 2022 Tidyverse.qmd) | readr::read_csv(), dplyr::select(), dplyr::rename(), dplyr::mutate(), dplyr::case_when(), dplyr::filter(), dplyr::group_by(), dplyr::summarise(), stringr::str_remove(), ggplot2::ggplot(), ggplot2::geom_col() | FIFA 2022 World Cup Matches (Kaggle) | Analyzes whether teams with higher ball possession were more likely to win matches during the 2022 FIFA World Cup. Demonstrates how Tidyverse functions were used to clean and transform data, calculate match outcomes, summarize results, and visualize win, loss, and draw percentages. |
 
 
 
