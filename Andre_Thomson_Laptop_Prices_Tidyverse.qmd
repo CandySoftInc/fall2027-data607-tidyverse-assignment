@@ -44,7 +44,7 @@ These are the main functions I used:
 ## Import the data
 
 ```{r}
-# Read the laptop data stored in the data folder.
+# Read the laptop data stored with this QMD file.
 # show_col_types = FALSE keeps the rendered report from printing a long import message.
 laptops_raw <- read_csv("Andre_Thomson_laptops.csv", show_col_types = FALSE)
 
