@@ -56,3 +56,4 @@ Do not submit work to the previous course repository. Use this repository for th
 | Extending Student | Original Author | Original Vignette | Extension File | New Tidyverse Work Added |
 | --- | --- | --- | --- | --- |
 | Your Name | Classmate Name | [original_vignette.qmd](original_vignette.qmd) | [your_extension.qmd](your_extension.qmd) | A brief description of the added analysis, transformation, or visualization. |
+| Andre Thomson | Patricio Romero | [Exploring Vehicle Fuel Efficiency with Tidyverse](vehicle_fuel_efficiency_tidyverse.qmd) | [Andre Thomson Vehicle MPG Extension](Andre_Thomson_VehicleMPG.qmd) | Uses tidyr::pivot_longer() to reshape city and highway MPG into one road-type column, calculates class averages, and adds an accessible grouped comparison chart. |
