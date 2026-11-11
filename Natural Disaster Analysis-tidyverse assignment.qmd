@@ -1,0 +1,179 @@
+---
+title: "Natural disaster analysis -tidyverse"
+author: "Ziaul Hoque"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    embed-resources: true
+execute:
+  echo: true
+  warning: false
+  message: false
+vignette: >
+  %\VignetteIndexEntry{How to Use tidyverse, dplyr & knitr awesome Packages}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette shows how I will use step by step following "*`dplyr`*", "*`lubridate`*", *`"ggplot2"`* functions from the `tidyverse 2.0` package with a short analysis. I am using *`"scales"`* package for *`"dollar_format"`* function for formatting a vector. Also using *`"knitr"`* is a CRAN package, which used for Dynamic report generation in R.
+
+------------------------------------------------------------------------
+
+### tidyverse assignment apporach
+
+This dataset from kaggle, regarding an analytical investigation of worldwide natural disaster occurences documented between 2023 and 2025. Dataset contains important characteristics such the type of disaster, location, degree of severity, number of victims, financial losses, and emergency response timings are all captured here and also gives an opportunity to working with enormous numerical data.
+
+### Data Sources
+
+<https://github.com/CandySoftInc/DATA607-Assignment1-Natural-Disaster-Events/blob/main/synthetic_disaster_events_2025.csv>
+
+### Research Question
+
+How we can improve more awareness to people before any natural disaster happens and how we can prevent loss or degree of severity, number of victims through this analysis?
+
+### Codebase
+
+**Including all related library**
+
+```{r import relevant library}
+library(tidyverse)
+library(scales)
+library(knitr)
+```
+
+**Import Dataset**
+
+Here I am using "*`read_csv()`*" function for loading dataset into dataframe to clean and preparing a dataset by modifying columns through "*`mutate()`*" function into correct datatypes. Also using "*`as.Date()"`* function regarding date conversion and "*`factor()`*" function for encode as a vector.
+
+```{r loading dataset and preparing columns }
+data_file <- "synthetic_disaster_events_2025.csv"
+
+#Tidyverse: import using read_csv() (readr) 
+data <- read_csv(data_file, show_col_types = FALSE) |>
+  mutate(
+    date = as.Date(date),
+    disaster_type = factor(disaster_type),
+    location = factor(location),
+    aid_provided = factor(aid_provided, levels = c("No", "Yes")),
+    is_major_disaster = as.logical(is_major_disaster)
+  )
+
+cat("Rows:", nrow(data), "  Columns:", ncol(data))
+```
+
+Check Dataset Structure
+
+```{r inspect data structure}
+
+str(data)
+
+head(data)
+```
+
+**Dataset Overview**
+
+```{r dataset overview for events, economic loss, avg severity avg level & response time}
+overview <- tibble(
+  Measure = c(
+    "Number of events",
+    "Number of variables",
+    "Earliest event date",
+    "Latest event date",
+    "Total affected population",
+    "Total estimated economic loss",
+    "Average severity",
+    "Average response time (hours)"
+  ),
+  Value = c(
+    nrow(data),
+    ncol(data),
+    format(min(data$date, na.rm = TRUE), "%Y-%m-%d"),
+    format(max(data$date, na.rm = TRUE), "%Y-%m-%d"),
+    comma(sum(data$affected_population, na.rm = TRUE)),
+    dollar(sum(data$estimated_economic_loss_usd, na.rm = TRUE)),
+    round(mean(data$severity_level, na.rm = TRUE), 2),
+    round(mean(data$response_time_hours, na.rm = TRUE), 2)
+  )
+)
+kable(overview, caption = "Dataset overview")
+```
+
+**Event Frequency**
+
+Here, I am using *`"ggplot()"`* & *`"geom_col()"`* function regarding to visualize the graph for event frequency.
+
+```{r Disaster events by type}
+
+events_by_type <- data %>% count(disaster_type, sort = TRUE)
+ggplot(events_by_type, aes(y = reorder(disaster_type, n), x = n)) +
+  geom_col() + coord_flip() +
+  labs(y = NULL, x = "Number of events", title = "Disaster Events by Type")
+```
+
+Using *`"knitr()"`* function for represent data into a table format.
+
+```{r showing in table Disaster events by type}
+knitr::kable(events_by_type, col.names = c("Disaster type", "Events"))
+```
+
+**Economic loss**
+
+Using *`"summarize()"`* function to create a new data frame in new category.
+
+```{r economic loss mean, median value}
+loss_by_type <- data %>%
+  group_by(disaster_type) %>%
+  summarise(
+    events = n(),
+    total_loss_usd = sum(estimated_economic_loss_usd, na.rm = TRUE),
+    mean_loss_usd = mean(estimated_economic_loss_usd, na.rm = TRUE),
+    median_loss_usd = median(estimated_economic_loss_usd, na.rm = TRUE),
+    .groups = "drop"
+  ) %>% arrange(desc(total_loss_usd))
+
+ggplot(loss_by_type, aes(x = reorder(disaster_type, total_loss_usd), y = total_loss_usd)) +
+  geom_col() + coord_flip() + scale_y_continuous(labels = dollar_format()) +
+  labs(x = NULL, y = "Total estimated loss (USD)", title = "Estimated economic loss by disaster type")
+```
+
+```{r}
+knitr::kable(loss_by_type, digits = 0)
+```
+
+**Major-disaster summary**
+
+Using tidyverse "*`gorup_by()"`* function for grouping the data for analysis purpose.
+
+```{r amjor disaster summary}
+major_summary <- data %>%
+  group_by(is_major_disaster) %>%
+  summarise(
+    events = n(),
+    avg_severity = mean(severity_level, na.rm = TRUE),
+    avg_affected = mean(affected_population, na.rm = TRUE),
+    avg_loss_usd = mean(estimated_economic_loss_usd, na.rm = TRUE),
+    avg_response_hours = mean(response_time_hours, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(category = if_else(is_major_disaster == 1, "Major disaster", "Other disaster")) %>%
+  select(category, everything(), -is_major_disaster)
+knitr::kable(major_summary, digits = 2)
+```
+
+**Summary by location**
+
+```{r total affected people, economic loss & avg severity by location}
+location_summary <- data %>%
+  group_by(location) %>%
+  summarise(
+    events = n(),
+    total_affected = sum(affected_population, na.rm = TRUE),
+    total_loss_usd = sum(estimated_economic_loss_usd, na.rm = TRUE),
+    avg_severity = mean(severity_level, na.rm = TRUE),
+    .groups = "drop"
+  ) %>% arrange(desc(total_loss_usd))
+knitr::kable(location_summary, digits = 2)
+```
